@@ -1,0 +1,45 @@
+%% 6. Laboratorijas Darbs
+%% Vidējās un efektīvās vērtības noteikšana
+%% Vidējās vērtības noteikšana
+t = 0:0.01:4;
+
+%%  3a formula:
+N = length(t);
+vv3a = 1/(N-1)*sum(sig(t(1:end-1)))
+vv3b = 1/(N-1)*sum(sig(t(2:end)))
+h = (t(end) - t(1))/(N-1);
+vv3c = 1/(N-1)*sum(sig(t(1:end-1)+h/2))
+vv4 = 1/(N-1)*((sig(t(1))+sig(t(end)))/2+sum(sig(t(2:end-1))))
+
+%% vv.noteikšana izmantojot matlabā iebūvēto funkciju quad, kas ir domāta skaitliskai integrēšanai
+vvquad = 1/(t(end)-t(1))*quad(@sig, 0,4)
+
+%% Vidējās vērtības aprēķins pie dažādām precizitātēm
+%% 3a, 3b, 3c, 4 forumlās precizitāte tiek uzdota ar laika soli, t.i definējot laiku t = 0:0.01:4; 0.01 ir laika solis
+%% quad funkcijai precizitāte tiek uzdota ar trešo argumentu norādot precizitāti
+%% Piemērs 1.
+%% 3a foruma ar dazadam precizitate,
+dt = [0.1 0.01 0.001]
+for dtc = dt
+    t = 0:dtc:4;
+    N = length(t);
+    vv3a = 1/(N-1)*sum(sig(t(1:end-1)));
+    fprintf('|platums=%0.d|vv=%f\t|\n', dtc, vv3a);
+end
+%% quad ar dazadam precizitatem
+tol = [1e-1 1e-2 1e-3 1e-4]
+for tolc=tol
+    vvquad = 1/(t(end)-t(1))*quad(@sig, 0,4, tolc)
+    fprintf('|platums=%0.d|vv=%f\t|\n', tolc, vvquad)
+end
+%% īstās vidējās vērtības aprēķins
+%% noteiktais integrālis (vv. formula 1) ir jaatrod ar simbolisko integresanu musu signals (no 3ld) sastaves no  5 posmiem. katru posmu mes iekopesim seit
+syms t1
+y1 = 3/2*t1;
+int1 = int(y1, t1, 0, 2)
+syms t2
+%y2 = 3+zeros(size(t2));
+y2=3
+int2 = int(y2, t2, 2, 4)
+vv_istaa = double(1/(4-0)*(int1+int2))
+    
